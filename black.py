@@ -20,6 +20,7 @@ class black_texteditor(Tk):
         self.bind("<Control-s>",lambda x: self.save_3(x))
         self.bind("<Control-l>",lambda x: self.save_as_3(x))
         self.bind("<Control-w>",lambda x: self.close_all_2(x))
+        self.bind("<F1>",lambda x: self.donate_2(x))
         self.photo = PhotoImage(file = './Scr/black.png')
         self.grid_columnconfigure(0,weight=1)
         self.grid_rowconfigure(0,weight=1)
@@ -30,6 +31,7 @@ class black_texteditor(Tk):
         fontfile = Menu(menu,tearoff=0)
         themefile = Menu(menu,tearoff=0)
         helpfile = Menu(menu,tearoff=0)
+        donatefile = Menu(menu,tearoff=0)
         self.check_tab = False
         self.check_button = False
         filemenu.add_command(label='New',accelerator='Ctrl+N',command=self.new_tab)
@@ -117,12 +119,16 @@ class black_texteditor(Tk):
         fontsize.add_radiobutton(label=60,command=self._60,variable=self.ch,value=60)
         fontsize.add_radiobutton(label=70,command=self._70,variable=self.ch,value=70)
         fontsize.add_radiobutton(label=80,command=self._80,variable=self.ch,value=80)
-        fontstyle.add_command(label='None',command=self.none_s)
-        fontstyle.add_command(label='Broadway',command=self.Broadway)
-        fontstyle.add_command(label='Bodoni MT',command=self.Bodoni_MT)
-        fontstyle.add_command(label='Snap ITC',command=self.Snap_ITC)
-        fontstyle.add_command(label='Small Fonts',command=self.Small_Fonts)
-        fontstyle.add_command(label='Goudy Stout',command=self.Goudy_Stout)
+        fontstyle.add_radiobutton(label='None',command=self.none_s)
+        fontstyle.add_radiobutton(label='Broadway',command=self.Broadway)
+        fontstyle.add_radiobutton(label='Bodoni MT',command=self.Bodoni_MT)
+        fontstyle.add_radiobutton(label='Snap ITC',command=self.Snap_ITC)
+        fontstyle.add_radiobutton(label='Small Fonts',command=self.Small_Fonts)
+        fontstyle.add_radiobutton(label='Goudy Stout',command=self.Goudy_Stout)
+        fontstyle.add_radiobutton(label='Microsoft PhagsPa',command=self.Microsoft_PhagsPa)
+        fontstyle.add_radiobutton(label='Mistral',command=self.Mistral)
+        fontstyle.add_radiobutton(label='Modern',command=self.Modern)
+        fontstyle.add_radiobutton(label='MV Boli',command=self.MV_Boli)
         fontstyle.add_separator()
         fontstyle.add_command(label='Find',command=self.find_font)
         fontcolorfile.add_command(label='Black',command=self.fontblack)
@@ -137,6 +143,7 @@ class black_texteditor(Tk):
         themefile.add_command(label='Light',command=self.light)
         themefile.add_separator()
         themefile.add_command(label='Costumize',command=self.costumize)
+        donatefile.add_command(label='donate',accelerator='F1',command=self.donate)
         helpfile.add_command(label='Help',command=self.help)
         helpfile.add_separator()
         helpfile.add_command(label='Send Feedback',command=self.feedback)
@@ -144,6 +151,7 @@ class black_texteditor(Tk):
         menu.add_cascade(label='About',menu=aboutmenu)
         menu.add_cascade(label='Font',menu=fontfile)
         menu.add_cascade(label='Theme',menu=themefile)
+        menu.add_cascade(label='Donate',menu=donatefile)
         menu.add_cascade(label='Help',menu=helpfile)
         self.check_nl = False
         self.check_tab = False
@@ -153,9 +161,13 @@ class black_texteditor(Tk):
         self.iconphoto(False,self.photo)
         self.mainloop()
     def help(self):
-        webbrowser.open_new_tab('')
+        webbrowser.open_new_tab('https://github.com/black-software-com/black-help')
     def feedback(self):
         webbrowser.open_new_tab('https://black-software.ir/contact/')
+    def donate(self):
+        webbrowser.open_new_tab('https://idpay.ir/mrprogrammer2938')
+    def donate_2(self,x):
+        webbrowser.open_new_tab('https://idpay.ir/mrprogrammer2938')
     def close_all(self):
         f.destroy()
         if self.check_clear_s == True:
@@ -318,16 +330,42 @@ class black_texteditor(Tk):
     def Bodoni_MT(self):
         self.txt.config(font=("Bodoni MT",self.ch.get()))
         self.check_s = "Bodoni MT"
+    def Microsoft_PhagsPa(self):
+        self.txt.config(font=("Microsoft PhagsPa",self.ch.get()))
+        self.check_s = "Microsoft PhagsPa"
+    def Mistral(self):
+        self.txt.config(font=("Mistral",self.ch.get()))
+        self.check_s = "Mistral"
+    def Modern(self):
+        self.txt.config(font=("Modern",self.ch.get()))
+        self.check_s = "Modern"
+    def MV_Boli(self):
+        self.txt.config(font=("MV Boli",self.ch.get()))
+        self.check_s = "MV Boli"
     def find_font(self):
+        global window3,fontinput
         window3 = Tk()
         window3.title('Black-texteditor/font/Find')
         fontinput = Entry(window3,borderwidth=3)
-        fontinput.place(bordermode=OUTSIDE,x=80,y=20)
+        fontinput.place(bordermode=OUTSIDE,x=175,y=80)
+        submit_button = TButton(window3,text='Submit',command=self.submit_font_main)
+        submit_button.place(bordermode=OUTSIDE,x=160,y=120)
+        exit_button = TButton(window3,text='Exit',command=self.ext_5)
+        exit_button.place(bordermode=OUTSIDE,x=240,y=120)
         submit_b = Button(self,text='Submit',command=self.submit_font)
-        linklabel = HTMLLabel(window3,html='<a href="http://www.github.com/mrprogrammer2938"> Github </a>')
-        linklabel.place(bordermode=INSIDE,x=20,y=180)
-        window3.geometry("500x400")
+        linklabel = HTMLLabel(window3,html='<a href="https://black-software.ir" target="_blank"> Black </a>')
+        linklabel.place(bordermode=INSIDE,x=20,y=270)
+        window3.wm_attributes('-toolwindow','True')
+        window3.geometry("500x300")
+        window3.resizable(0,0)
         window3.mainloop()
+    def submit_font_main(self):
+        try:
+            self.txt.config(font=(fontinput.get(),self.ch.get()))
+            window3.destroy()
+        except:
+            showerror(title='Cannot Set Font',message='Please, check Font Name!')
+            print(False)
     def submit_font(self):
         self.font_file = open("./Font/font.txt","r").read()
     def Broadway(self):
@@ -671,6 +709,9 @@ class black_texteditor(Tk):
         self.destroy()
         self.quit()
         quit()
+    def ext_5(self):
+        window3.destroy()
+        window3.quit()
     def save(self):
         global file_save
         if self.i == True:
