@@ -12,8 +12,9 @@ import webbrowser
 class black_texteditor(Tk):
     def __init__(self):
         super(black_texteditor,self).__init__()
-        global tab1,f,sc
+        global tab1,f,sc,click_key
         self.title('Black Texteditor')
+        self.a = False
         self.bind("<Control-n>",lambda x: self.new_tab_2(x))
         self.bind("<Control-r>",lambda x: self.new_2(x))
         self.bind("<Control-o>",lambda x: self.open_file_3(x))
@@ -28,6 +29,7 @@ class black_texteditor(Tk):
         menu = Menu(self)
         filemenu = Menu(menu,tearoff=0)
         aboutmenu = Menu(menu,tearoff=0)
+        editmenu = Menu(menu,tearoff=0)
         fontfile = Menu(menu,tearoff=0)
         themefile = Menu(menu,tearoff=0)
         helpfile = Menu(menu,tearoff=0)
@@ -39,9 +41,15 @@ class black_texteditor(Tk):
         filemenu.add_command(label='Open',accelerator='Ctrl+O',command=self.open_file)
         filemenu.add_command(label='Save',accelerator='Ctrl+S',command=self.save)
         filemenu.add_command(label='Save As',accelerator='Ctrl+l',command=self.save_as)
+        filemenu.add_command(label='Rename',command=self.rename)
         filemenu.add_separator()
         filemenu.add_command(label='Close All',accelerator='Ctrl+w',command=self.close_all)
         filemenu.add_separator()
+        editmenu.add_command(label='Cut',command=self.cut_text)
+        editmenu.add_command(label='Copy',command=self.copy_text)
+        editmenu.add_command(label='Paste',command=self.paste_text)
+        editmenu.add_separator()
+        editmenu.add_command(label='Reload',command=self.reload)
         filemenu.add_command(label='Exit',accelerator='Ctrl+F4',command=self.ext)  
         aboutmenu.add_command(label='Black',command=self.black)
         aboutmenu.add_command(label='Dev',command=self.dev)
@@ -62,6 +70,7 @@ class black_texteditor(Tk):
         self.y = False
         self.check_nothing_l = False
         self.check_open_file = False
+        self.check_file = False
         if txt_welcome_d == "False":
             self.welcome = Frame(f)
             self.y = True
@@ -102,15 +111,26 @@ class black_texteditor(Tk):
             self.welcome_date = open("welcome_date","w")
             self.welcome_date.write("True")
             self.welcome_date.close()
+            self.check_file = False
             self.hellomenucheck = True
         else:
             print()
             self.check_tab = True
             self.new_tab()
+            self.check_file = True
         self.o = True
         self.ch = IntVar()
         self.check_f = False
         self.chs = StringVar()  
+
+        click_key = Menu(self,tearoff=0)
+        click_key.add_command(label='Cut',accelerator="Ctrl+X",command=self.cut_text)
+        click_key.add_command(label='Copy',accelerator='Ctrl+C',command=self.copy_text)
+        click_key.add_command(label='Paste',accelerator="Ctrl+V",command=self.paste_text)
+        click_key.add_command(label='Reload',command=self.reload)
+        click_key.add_separator()
+        click_key.add_command(label='Exit',accelerator="Ctrl+F4",command=self.ext)
+
         fontsize.add_radiobutton(label=10,command=self._10,variable=self.ch,value=10)
         fontsize.add_radiobutton(label=20,command=self._20,variable=self.ch,value=20)
         fontsize.add_radiobutton(label=30,command=self._30,variable=self.ch,value=30)
@@ -119,6 +139,8 @@ class black_texteditor(Tk):
         fontsize.add_radiobutton(label=60,command=self._60,variable=self.ch,value=60)
         fontsize.add_radiobutton(label=70,command=self._70,variable=self.ch,value=70)
         fontsize.add_radiobutton(label=80,command=self._80,variable=self.ch,value=80)
+        fontsize.add_separator()
+        fontsize.add_checkbutton(label='Add',command=self.add_fontsize)
         fontstyle.add_radiobutton(label='None',command=self.none_s)
         fontstyle.add_radiobutton(label='Broadway',command=self.Broadway)
         fontstyle.add_radiobutton(label='Bodoni MT',command=self.Bodoni_MT)
@@ -148,6 +170,7 @@ class black_texteditor(Tk):
         helpfile.add_separator()
         helpfile.add_command(label='Send Feedback',command=self.feedback)
         menu.add_cascade(label='File',menu=filemenu)  
+        menu.add_cascade(label='Edit',menu=editmenu)
         menu.add_cascade(label='About',menu=aboutmenu)
         menu.add_cascade(label='Font',menu=fontfile)
         menu.add_cascade(label='Theme',menu=themefile)
@@ -158,8 +181,22 @@ class black_texteditor(Tk):
         self.config(menu=menu)
         self.geometry("1000x600")
         self.check_s = "None"
+        self.bind("<Button-3>",self.do_popup)
         self.iconphoto(False,self.photo)
         self.mainloop()
+    def do_popup(self,event):
+        try:
+            click_key.tk_popup(event.x_root,event.y_root)
+        finally:
+            click_key.grab_release()
+    def cut_text(self):
+        self.txt.event_generate("<<Cut>>")
+    def copy_text(self):
+        self.txt.event_generate("<<Copy>>")
+    def paste_text(self):
+        self.txt.event_generate("<<Paste>>")
+    def reload(self):
+        self.txt.event_generate("<<Reload>>")
     def help(self):
         webbrowser.open_new_tab('https://github.com/black-software-com/black-help')
     def feedback(self):
@@ -342,6 +379,25 @@ class black_texteditor(Tk):
     def MV_Boli(self):
         self.txt.config(font=("MV Boli",self.ch.get()))
         self.check_s = "MV Boli"
+    def add_fontsize(self):
+        global window5,fontsizeinput
+        window5 = Tk()
+        window5.title('Black-Texteditor/Add-Fontsize')
+        fontsizeinput = Spinbox(window5,from_=0,to=150)
+        fontsizeinput.place(bordermode=OUTSIDE,x=175,y=80)
+        submit_button = TButton(window5,text='Submit',command=self.submit_font_size_main)
+        submit_button.place(bordermode=OUTSIDE,x=160,y=120)
+        exit_button = TButton(window5,text='Exit',command=self.ext_6)
+        exit_button.place(bordermode=OUTSIDE,x=240,y=120)
+        submit_b = Button(self,text='Submit',command=self.submit_font)
+        linklabel = HTMLLabel(window5,html='<a href="https://black-software.ir" target="_blank"> Black </a>')
+        linklabel.place(bordermode=INSIDE,x=20,y=270)
+        window5.wm_attributes('-toolwindow','True')
+        window5.geometry("500x300")
+        window5.mainloop()
+    def ext_6(self):
+        window5.destroy()
+        window5.quit()
     def find_font(self):
         global window3,fontinput
         window3 = Tk()
@@ -366,6 +422,9 @@ class black_texteditor(Tk):
         except:
             showerror(title='Cannot Set Font',message='Please, check Font Name!')
             print(False)
+    def submit_font_size_main(self):
+        self.txt.config(font=(self.check_s,fontsizeinput.get()))
+        window5.destroy()
     def submit_font(self):
         self.font_file = open("./Font/font.txt","r").read()
     def Broadway(self):
@@ -620,6 +679,7 @@ class black_texteditor(Tk):
                 tab1.config(text=[f"{self.file_4.name}"])
                 self.check_open_file = True
                 self.i = True
+                self.check_file = True
             else:
                 if self.check_tab == True:
                     self.file_4 = filedialog.askopenfile(title='Select File',mode="r+")
@@ -646,6 +706,7 @@ class black_texteditor(Tk):
                     self.txt.insert(END,t)
                     self.i = True
                     self.o = True
+                    self.check_file = True
                 else:
                     self.file_4 = filedialog.askopenfile(title='Select File',mode="r+")
                     t = self.file_4.read()
@@ -668,6 +729,7 @@ class black_texteditor(Tk):
                     self.txt.insert(END,t)
                     self.i = True
                     self.o = True
+                    self.check_file = True
         except (AttributeError) as err:
             print(err)
             self.check_open_file = False
@@ -680,12 +742,14 @@ class black_texteditor(Tk):
                 self.file_save_2.close()
                 self.title(f'Black-Texteditor/{self.file_save_2.name}')
                 f.tab("current",text=[f"{self.file_save_2.name}"])
+                self.check_file = True
             else:
                 self.file_save_2 = open(self.file_3.name,"r+")
                 self.file_save_2.write(str(self.txt2.get(1.0,END)))
                 self.file_save_2.close()
                 self.title(f'Black-Texteditor/{self.file_save_2.name}')
                 f.tab("current",text=[f"{self.file_save_2.name}"])
+                self.check_file = True
         else:
             try:
                 self.file_save_2 = filedialog.asksaveasfile(title='Save As',mode="w")
@@ -695,6 +759,7 @@ class black_texteditor(Tk):
                 f.tab("current",text=[f"{self.file_save_2.name}"])
                 self.i = True
                 self.e = True
+                self.check_file = True
             except (AttributeError,FileNotFoundError):
                 self.e = False
                 print(False)    
@@ -720,6 +785,7 @@ class black_texteditor(Tk):
             self.file_save_5.close()
             self.title(f'Black-Texteditor/{self.file_save_5.name}')
             f.tab("current",text=[f"{self.file_save_5.name}"])
+            self.check_file = True
         else:
             try:
                 self.file_save = filedialog.asksaveasfile(title='Save As',mode="w")
@@ -728,6 +794,7 @@ class black_texteditor(Tk):
                 self.title(f'Black-Texteditor/{self.file_save.name}')
                 f.tab("current",text=[f"{self.file_save.name}"])
                 self.i = True
+                self.check_file = True
             except (AttributeError,FileNotFoundError):
                 print(False)
     def save_3(self,x):
@@ -738,6 +805,7 @@ class black_texteditor(Tk):
             self.file_save_5.close()
             self.title(f'Black-Texteditor/{self.file_save_5.name}')
             f.tab("current",text=[f"{self.file_save_5.name}"])
+            self.check_file = True
         else:
             try:
                 self.file_save = filedialog.asksaveasfile(title='Save As',mode="w")
@@ -746,6 +814,7 @@ class black_texteditor(Tk):
                 self.title(f'Black-Texteditor/{self.file_save.name}')
                 f.tab("current",text=[f"{self.file_save.name}"])
                 self.i = True
+                self.check_file = True
             except (AttributeError,FileNotFoundError):
                 print(False)
     # def save_2(self):
@@ -772,6 +841,8 @@ class black_texteditor(Tk):
                 pass
             else:
                 f.tab("current",text=[f"{self.file_save.name}"])
+                self.check_file = True
+                self.a = True
         except (AttributeError,FileExistsError):
             print(False)
     def save_as_3(self,x):
@@ -784,8 +855,43 @@ class black_texteditor(Tk):
                 pass
             else:
                 f.tab("current",text=[f"{self.file_save.name}"])
+                self.check_file = True
+                self.c = True
         except (AttributeError,FileExistsError):
+            print(False)
+    def rename(self):
+        global window4,filename
+        if self.check_file == True:
+            try:
+                window4 = Tk()
+                window4.title('Rename')
+                filename = Entry(window4)
+                filename.place(bordermode=OUTSIDE,x=60,y=10)
+                submit_b = TButton(window4,text='Submit',command=self.submit_file_name)
+                submit_b.place(bordermode=OUTSIDE,x=50,y=40)
+                exit_b = TButton(window4,text='Exit',command=window4.destroy)
+                exit_b.place(bordermode=OUTSIDE,x=135,y=40)
+                window4.attributes("-toolwindow",True)
+                window4.geometry("250x100")
+                window4.mainloop()
+            except AttributeError:
+                showerror(title='Cannot Rename',messgae='Please, check File!')
+                print(False)
+        else:
+            showerror(title='Cannot Rename',message='Please, Check File!')
+            print(False)
+    def submit_file_name(self):
+        if self.a == True:
+            subprocess.getoutput(f"mv {self.save_as.name} {filename.get()}")
+            window4.destroy()
+        elif self.a == True:
+            subprocess.getoutput(f"mv {self.save_as.name} {filename.get()}")
+            window4.destroy()
+        # Code
+        else:
             print(False)
 if __name__ == '__main__':
     window = black_texteditor()
 # Black-Texteditor v1.0
+
+# Add Rename Menu
