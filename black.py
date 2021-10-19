@@ -1,20 +1,31 @@
 #!/usr/bin/python3
 # Black-TextEditor
-from tkinter import *
-from tkinter.ttk import Button as TButton, Label,Notebook
-from tkinter.messagebox import showinfo,showerror
-from tkinter.colorchooser import askcolor
-from tkinter.scrolledtext import ScrolledText
-from tkhtmlview import HTMLLabel
-from tkinter import filedialog
+import os
+import time
+try:
+    from tkinter import *
+    from tkinter.ttk import Button as TButton, Label,Notebook
+    from tkinter.messagebox import showinfo,showerror
+    from tkinter.colorchooser import askcolor
+    from tkinter.scrolledtext import ScrolledText
+    from tkinter import filedialog
+except (ImportError,ModuleNotFoundError):
+    os.system("pip install tk-tools")    
+try:
+    from tkhtmlview import HTMtLLabel
+except (ImportError,ModuleNotFoundError):
+    os.system("pip install tkhtmlview")
 import subprocess
 import webbrowser
+import random
+import socket
 class black_texteditor(Tk):
     def __init__(self):
         super(black_texteditor,self).__init__()
         global tab1,f,sc,click_key
         self.title('Black Texteditor')
         self.a = False
+        self.ips = [1,2,3,4,5,6,7,8,9]
         self.bind("<Control-n>",lambda x: self.new_tab_2(x))
         self.bind("<Control-r>",lambda x: self.new_2(x))
         self.bind("<Control-o>",lambda x: self.open_file_3(x))
@@ -32,6 +43,7 @@ class black_texteditor(Tk):
         editmenu = Menu(menu,tearoff=0)
         fontfile = Menu(menu,tearoff=0)
         themefile = Menu(menu,tearoff=0)
+        ipfile = Menu(menu,tearoff=0)
         helpfile = Menu(menu,tearoff=0)
         donatefile = Menu(menu,tearoff=0)
         self.check_tab = False
@@ -165,6 +177,8 @@ class black_texteditor(Tk):
         themefile.add_command(label='Light',command=self.light)
         themefile.add_separator()
         themefile.add_command(label='Costumize',command=self.costumize)
+        ipfile.add_command(label='My Ip',command=self.my_ip)
+        ipfile.add_command(label='Change Ip',command=self.change_ip)
         donatefile.add_command(label='donate',accelerator='F1',command=self.donate)
         helpfile.add_command(label='Help',command=self.help)
         helpfile.add_separator()
@@ -174,6 +188,7 @@ class black_texteditor(Tk):
         menu.add_cascade(label='About',menu=aboutmenu)
         menu.add_cascade(label='Font',menu=fontfile)
         menu.add_cascade(label='Theme',menu=themefile)
+        menu.add_cascade(labe='Ip',menu=ipfile)
         menu.add_cascade(label='Donate',menu=donatefile)
         menu.add_cascade(label='Help',menu=helpfile)
         self.check_nl = False
@@ -184,11 +199,33 @@ class black_texteditor(Tk):
         self.bind("<Button-3>",self.do_popup)
         self.iconphoto(False,self.photo)
         self.mainloop()
+    def change_ip(self):
+        global window6,ip
+        window6 = Tk()
+        window6.title('Black-Webbrowser/Change-Ip')
+        ip = Entry(window6,borderwidth=4)
+        ip.place(bordermode=OUTSIDE,x=35,y=20)
+        submit_ip_b = TButton(window6,text='Submit',command=self.submit_ip)
+        submit_ip_b.place(bordermode=OUTSIDE,x=60,y=60)
+        exit_b = TButton(window6,text='Exit',command=self.ext_7)
+        exit_b.place(bordermode=OUTSIDE,x=60,y=85)
+        window6.geometry("200x200")
+        window6.mainloop()
     def do_popup(self,event):
         try:
             click_key.tk_popup(event.x_root,event.y_root)
         finally:
             click_key.grab_release()
+    def submit_ip(self):
+        subprocess.getoutput(f"netsh interface ip set address name=”Local Area Connection” static {ip} 255.255.255.0 {ip}")
+        subprocess.getoutput(f"netsh interface ip set address name=”Local Area Connection” source=dhcp")
+        subprocess.getoutput(f"netsh interface ip set dns name=”Local Area Connection” static {ip}")
+        subprocess.getoutput(f"netsh interface ip add dns name=”Local Area Connection” ۸٫۸٫۸٫۸ index=2")
+        subprocess.getoutput(f"netsh interface ip set dnsservers name=”Local Area Connection” source=dhcp")
+        window6.destroy()
+    def ext_7(self):
+        window6.destroy()
+        window6.quit()
     def cut_text(self):
         self.txt.event_generate("<<Cut>>")
     def copy_text(self):
@@ -205,6 +242,9 @@ class black_texteditor(Tk):
         webbrowser.open_new_tab('https://idpay.ir/mrprogrammer2938')
     def donate_2(self,x):
         webbrowser.open_new_tab('https://idpay.ir/mrprogrammer2938')
+    def my_ip(self):
+        host = socket.gethostname()
+        showinfo(title='My Ip',message=f'{socket.gethostbyname(host)}')
     def close_all(self):
         f.destroy()
         if self.check_clear_s == True:
