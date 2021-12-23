@@ -1,8 +1,23 @@
-# Black-Notepad
-[![image](https://user-images.githubusercontent.com/78996423/146581206-1cce5795-96dc-484f-aacd-e0b1123f773d.png)](https://github.com/black-software-Com/Black-Notepad)
-
-#### Open Source
+# Black-Texteditor v1.0
 <hr>
 
-### Coming Soon...
+**Installing On Linux & MacOS**
+``` sh
+git clone https://github.com/black-software-Com/Black-Texteditor
+
+cd Black-Texteditor
+
+python black.py
+```
 <br>
+
+*Installing On Windows*
+``` sh
+scoop install git or choco install git
+
+git clone https://github.com/black-software-Com/Black-Texteditor
+
+cd Black-Texteditor
+```
+<br>
+
