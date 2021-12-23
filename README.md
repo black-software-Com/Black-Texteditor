@@ -21,3 +21,5 @@ cd Black-Texteditor
 ```
 <br>
 
+#### [License](https://github.com/black-software-Com/Black-Texteditor/blob/master/LICENSE)
+<br>
